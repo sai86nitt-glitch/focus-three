@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Check, Calendar, ChevronRight, Inbox } from "lucide-react";
+import { Plus, Check, Calendar, ChevronRight, Inbox, Trash2 } from "lucide-react";
 
 const STORAGE_KEY = "focus-tasks";
 
@@ -109,6 +109,13 @@ export default function FocusTasks() {
 
   function reopenTask(id: string) {
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, completed: false, completedAt: null } : t)));
+  }
+
+  function deleteTask(id: string) {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+    if (reschedulingId === id) {
+      setReschedulingId(null);
+    }
   }
 
   function startReschedule(task: Task) {
@@ -228,6 +235,13 @@ export default function FocusTasks() {
                         </button>
                       )}
                     </div>
+                    <button
+                      onClick={() => deleteTask(t.id)}
+                      className="shrink-0 mt-0.5 text-[#D8D4C6] hover:text-[#B54A3F] transition-colors"
+                      aria-label="Delete task"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 );
               })}
@@ -277,14 +291,23 @@ export default function FocusTasks() {
                 ) : (
                   <div key={t.id} className="flex items-center justify-between text-sm text-[#8A8578]">
                     <span className="truncate">{t.title}</span>
-                    <button
-                      onClick={() => startReschedule(t)}
-                      className={`text-xs shrink-0 ml-2 hover:underline ${
-                        daysFromToday(t.targetDate) < 0 ? "text-[#B54A3F]" : "hover:text-[#4A4638]"
-                      }`}
-                    >
-                      {dateLabel(t.targetDate)} · move date
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                      <button
+                        onClick={() => startReschedule(t)}
+                        className={`text-xs hover:underline ${
+                          daysFromToday(t.targetDate) < 0 ? "text-[#B54A3F]" : "hover:text-[#4A4638]"
+                        }`}
+                      >
+                        {dateLabel(t.targetDate)} · move date
+                      </button>
+                      <button
+                        onClick={() => deleteTask(t.id)}
+                        className="text-[#D8D4C6] hover:text-[#B54A3F] transition-colors"
+                        aria-label="Delete task"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
                 )
               )}
@@ -308,6 +331,13 @@ export default function FocusTasks() {
                     className="text-xs shrink-0 hover:text-[#6B6656] hover:underline"
                   >
                     Reopen
+                  </button>
+                  <button
+                    onClick={() => deleteTask(t.id)}
+                    className="shrink-0 hover:text-[#B54A3F] transition-colors"
+                    aria-label="Delete task"
+                  >
+                    <Trash2 size={13} />
                   </button>
                 </div>
               ))}
