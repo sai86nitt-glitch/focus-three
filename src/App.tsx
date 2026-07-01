@@ -249,12 +249,43 @@ export default function FocusTasks() {
               </h2>
             </div>
             <div className="bg-white/60 rounded-2xl border border-[#E5E2D8] border-dashed p-3.5 space-y-2">
-              {backlog.map((t) => (
-                <div key={t.id} className="flex items-center justify-between text-sm text-[#8A8578]">
-                  <span className="truncate">{t.title}</span>
-                  <span className="text-xs shrink-0 ml-2">{dateLabel(t.targetDate)}</span>
-                </div>
-              ))}
+              {backlog.map((t) =>
+                reschedulingId === t.id ? (
+                  <div key={t.id} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="truncate text-[#8A8578]">{t.title}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <input
+                        type="date"
+                        value={rescheduleDate}
+                        onChange={(e) => setRescheduleDate(e.target.value)}
+                        className="text-xs bg-[#F6F5F1] border border-[#E5E2D8] rounded-md px-2 py-1 outline-none"
+                      />
+                      <button
+                        onClick={() => confirmReschedule(t.id)}
+                        className="text-xs font-medium text-[#1E1D1B] underline"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setReschedulingId(null)}
+                        className="text-xs text-[#B4AF9E]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={t.id} className="flex items-center justify-between text-sm text-[#8A8578]">
+                    <span className="truncate">{t.title}</span>
+                    <button
+                      onClick={() => startReschedule(t)}
+                      className="text-xs shrink-0 ml-2 hover:underline hover:text-[#4A4638]"
+                    >
+                      {dateLabel(t.targetDate)} · move date
+                    </button>
+                  </div>
+                )
+              )}
             </div>
             <p className="text-xs text-[#B4AF9E] mt-2 flex items-center gap-1">
               <ChevronRight size={12} /> Unlocks as you clear your focus list
