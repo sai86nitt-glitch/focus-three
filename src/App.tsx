@@ -24,7 +24,7 @@ function dateLabel(dateStr: string) {
   const diff = daysFromToday(dateStr);
   if (diff === 0) return "Today";
   if (diff === 1) return "Tomorrow";
-  if (diff === -1) return "Yesterday";
+  if (diff === -1) return "Due Yesterday";
   if (diff < 0) return `${Math.abs(diff)}d overdue`;
   if (diff < 7) return `In ${diff}d`;
   return new Date(dateStr + "T00:00:00").toLocaleDateString(undefined, {
@@ -279,7 +279,9 @@ export default function FocusTasks() {
                     <span className="truncate">{t.title}</span>
                     <button
                       onClick={() => startReschedule(t)}
-                      className="text-xs shrink-0 ml-2 hover:underline hover:text-[#4A4638]"
+                      className={`text-xs shrink-0 ml-2 hover:underline ${
+                        daysFromToday(t.targetDate) < 0 ? "text-[#B54A3F]" : "hover:text-[#4A4638]"
+                      }`}
                     >
                       {dateLabel(t.targetDate)} · move date
                     </button>
