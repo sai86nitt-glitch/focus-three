@@ -59,6 +59,18 @@ export default function FocusTasks() {
 
   const visible = incomplete.slice(0, 3);
   const backlog = incomplete.slice(3);
+
+  const dateCounts = incomplete.reduce<Record<string, number>>((acc, t) => {
+    acc[t.targetDate] = (acc[t.targetDate] ?? 0) + 1;
+    return acc;
+  }, {});
+  const overloadedDays = [...new Set(visible.map((t) => t.targetDate))]
+    .filter((d) => dateCounts[d] > 3)
+    .map((d) => ({
+      date: d,
+      hiddenCount: dateCounts[d] - visible.filter((t) => t.targetDate === d).length,
+    }));
+
   const completedTasks = tasks
     .filter((t) => t.completed)
     .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0))
@@ -221,6 +233,11 @@ export default function FocusTasks() {
               })}
             </div>
           )}
+          {overloadedDays.map(({ date, hiddenCount }) => (
+            <p key={date} className="text-xs text-[#B54A3F] mt-3">
+              {hiddenCount} more task{hiddenCount === 1 ? "" : "s"} due {dateLabel(date)} — waiting below
+            </p>
+          ))}
         </div>
 
         {backlog.length > 0 && (
