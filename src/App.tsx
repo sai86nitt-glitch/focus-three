@@ -46,6 +46,7 @@ export default function FocusTasks() {
   const [date, setDate] = useState(todayStr());
   const [reschedulingId, setReschedulingId] = useState<string | null>(null);
   const [rescheduleDate, setRescheduleDate] = useState("");
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,6 +117,7 @@ export default function FocusTasks() {
     if (reschedulingId === id) {
       setReschedulingId(null);
     }
+    setConfirmingDeleteId(null);
   }
 
   function startReschedule(task: Task) {
@@ -130,6 +132,36 @@ export default function FocusTasks() {
     );
     setReschedulingId(null);
     setRescheduleDate("");
+  }
+
+  function renderDeleteControl(id: string, size = 13) {
+    if (confirmingDeleteId === id) {
+      return (
+        <span className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => deleteTask(id)}
+            className="text-xs font-medium text-[#B54A3F] underline"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => setConfirmingDeleteId(null)}
+            className="text-xs text-[#B4AF9E]"
+          >
+            Cancel
+          </button>
+        </span>
+      );
+    }
+    return (
+      <button
+        onClick={() => setConfirmingDeleteId(id)}
+        className="shrink-0 text-[#D8D4C6] hover:text-[#B54A3F] transition-colors"
+        aria-label="Delete task"
+      >
+        <Trash2 size={size} />
+      </button>
+    );
   }
 
   return (
@@ -235,13 +267,7 @@ export default function FocusTasks() {
                         </button>
                       )}
                     </div>
-                    <button
-                      onClick={() => deleteTask(t.id)}
-                      className="shrink-0 mt-0.5 text-[#D8D4C6] hover:text-[#B54A3F] transition-colors"
-                      aria-label="Delete task"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="mt-0.5">{renderDeleteControl(t.id, 14)}</div>
                   </div>
                 );
               })}
@@ -300,13 +326,7 @@ export default function FocusTasks() {
                       >
                         {dateLabel(t.targetDate)} · move date
                       </button>
-                      <button
-                        onClick={() => deleteTask(t.id)}
-                        className="text-[#D8D4C6] hover:text-[#B54A3F] transition-colors"
-                        aria-label="Delete task"
-                      >
-                        <Trash2 size={13} />
-                      </button>
+                      {renderDeleteControl(t.id)}
                     </div>
                   </div>
                 )
@@ -332,13 +352,7 @@ export default function FocusTasks() {
                   >
                     Reopen
                   </button>
-                  <button
-                    onClick={() => deleteTask(t.id)}
-                    className="shrink-0 hover:text-[#B54A3F] transition-colors"
-                    aria-label="Delete task"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {renderDeleteControl(t.id)}
                 </div>
               ))}
             </div>
