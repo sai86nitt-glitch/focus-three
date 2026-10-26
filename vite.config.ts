@@ -12,6 +12,9 @@ export default defineConfig(({ command }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      workbox: {
+        importScripts: ['push-handler.js'],
+      },
       manifest: {
         name: 'Focus Three',
         short_name: 'Focus Three',

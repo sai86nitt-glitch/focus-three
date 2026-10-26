@@ -1,0 +1,12 @@
+{
+  "name": "focus-three-reminders",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs",
+    "keys": "node -e \"const k=require('web-push').generateVAPIDKeys();console.log('VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey)\""
+  },
+  "dependencies": {
+    "web-push": "^3.6.7"
+  }
+}

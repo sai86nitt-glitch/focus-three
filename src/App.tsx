@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Check, Calendar, ChevronRight, Inbox, Trash2 } from "lucide-react";
+import { Plus, Check, Calendar, ChevronRight, Inbox, Trash2, Bell } from "lucide-react";
+import {
+  remindersAvailable,
+  remindersOn,
+  reminderHour,
+  enableReminders,
+  syncReminders,
+} from "./reminders";
 
 const STORAGE_KEY = "focus-tasks";
 
@@ -52,6 +59,7 @@ export default function FocusTasks() {
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [reminders, setReminders] = useState(remindersOn);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -64,6 +72,17 @@ export default function FocusTasks() {
 
   const visible = incomplete.slice(0, 3);
   const backlog = incomplete.slice(3);
+
+  const focusKey = JSON.stringify(visible.map((t) => ({ title: t.title, targetDate: t.targetDate })));
+
+  useEffect(() => {
+    syncReminders(JSON.parse(focusKey)).catch(() => {});
+  }, [focusKey]);
+
+  async function turnOnReminders() {
+    const ok = await enableReminders(JSON.parse(focusKey)).catch(() => false);
+    setReminders(ok);
+  }
 
   const dateCounts = incomplete.reduce<Record<string, number>>((acc, t) => {
     acc[t.targetDate] = (acc[t.targetDate] ?? 0) + 1;
@@ -181,6 +200,18 @@ export default function FocusTasks() {
           <p className="text-sm text-[#6B6656] mt-1">
             Only three tasks at a time. Finish one, or push its date out, to see the next.
           </p>
+          {remindersAvailable() && (
+            <div className="mt-3 text-xs text-[#8A8578] flex items-center gap-1.5">
+              <Bell size={12} className="shrink-0" />
+              {reminders ? (
+                <span>Daily reminder on at {reminderHour()}:00</span>
+              ) : (
+                <button onClick={turnOnReminders} className="underline hover:text-[#4A4638]">
+                  Turn on daily reminder at {reminderHour()}:00
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <form onSubmit={addTask} className="mb-8 bg-white rounded-2xl border border-[#E5E2D8] p-4">
