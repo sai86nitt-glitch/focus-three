@@ -20,7 +20,7 @@ npm run preview
 
 ## Deploy
 
-Pushing to `main` builds the app and deploys it to GitHub Pages via `.github/workflows/deploy.yml`. To deploy manually instead:
+Pushing to `claude/new-session-woemhk` (the repo's default branch for now) builds the app and deploys it to GitHub Pages via `.github/workflows/deploy.yml`. Update that workflow's `branches` list if the deploy branch changes. To deploy manually instead:
 
 ```bash
 npm run deploy
